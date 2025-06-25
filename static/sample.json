@@ -1,0 +1,55 @@
+{
+    "details": {
+        "background": {
+            "type": "Air terjun alami di tengah hutan tropis",
+            "elements": "Bebatuan, pepohonan hijau, air jernih, kabut tipis dari percikan air terjun",
+            "lighting": "Cahaya alami matahari pagi atau sore, sinar menembus dedaunan"
+        },
+        "atmosphere": "Segar, alami, ceria, penuh kebebasan, menenangkan",
+        "physical_attributes": {
+            "gender": "Wanita",
+            "ethnicity": "Indonesia, Asia",
+            "age_range": "Dewasa muda (25-30 tahun)",
+            "body_type": "Ramping, proporsional, aktif",
+            "height": "Sekitar 165 cm",
+            "weight": "Proporsional dan sehat",
+            "skin_tone": "Coklat terang atau kuning langsat, natural",
+            "bust_shape": "Bulat dan proporsional",
+            "bust_size": "36B-36C",
+            "accessories": "Tanpa aksesori berlebihan, mungkin gelang sederhana atau ikat rambut"
+        },
+        "clothing": {
+            "headwear": "Tanpa penutup kepala",
+            "top": "Atasan santai, tanktop atau kaos tipis, warna cerah",
+            "bottoms": "Celana pendek atau rok santai, bahan cepat kering",
+            "footwear": "Tanpa alas kaki, kaki telanjang di air",
+            "bra_color": "Disesuaikan dengan atasan, warna senada atau netral"
+        },
+        "expression": "Tersenyum lepas, ekspresi bahagia, menikmati suasana, tatapan ke air atau kamera",
+        "action_and_interaction": {
+            "actions": [
+                "Bermain air di bawah air terjun",
+                "berlari kecil di air dangkal",
+                "memercikkan air dengan tangan",
+                "duduk santai di batu"
+            ],
+            "interactions": "Sendiri, berinteraksi dengan alam sekitar, menikmati air dan suasana"
+        },
+        "image_quality": {
+            "resolution": "Resolusi sangat tinggi (4K atau 8K)",
+            "focus": "Fokus tajam pada wanita dan air terjun",
+            "clarity": "Bersih, detail jelas",
+            "vibrancy": "Warna alami, hijau segar, biru air, kulit natural",
+            "style": "Natural, candid, outdoor photography",
+            "detail_level": "Detail pada percikan air, tekstur batu, ekspresi wajah"
+        },
+        "composition": {
+            "shot_type": "Full body shot, horizontal atau vertikal, di area air terjun",
+            "focus_subject": "Wanita yang bermain air di air terjun",
+            "aspect_ratio": "9:16 (potret/portrait) atau 16:9 (landscape)",
+            "camera_angle": "Eye-level atau sedikit dari bawah, menonjolkan gerakan dan ekspresi"
+        },
+        "purpose": "Untuk promosi wisata alam, konten media sosial, atau editorial majalah traveling",
+        "notes": "Pastikan suasana alami dan ekspresi ceria. Hindari pose vulgar, fokus pada keindahan alam dan kebahagiaan alami."
+    }
+}

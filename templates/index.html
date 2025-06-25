@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="/static/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f6f8ff 0%, #e9f0ff 100%);
+            min-height: 100vh;
+        }
+
+        .form-section {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-field {
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: #393855;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .section-header {
+            background: linear-gradient(90deg, #4540e4 5%, #7779f0 95%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .submit-button {
+            background: linear-gradient(135deg, #4540e4 10%, #7779f0 90%);
+            transition: transform 0.2s, box-shadow 0.2s;
+            color: #fff !important;
+            border: none;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(197, 146, 17, 0.3);
+            background: linear-gradient(135deg, #393855 0%, #6366f1 100%);
+            color: #fff !important;
+        }
+
+        .result-container {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e6f0ff 100%);
+            border: 2px solid #e2e8f0;
+        }
+
+        .copy-button {
+            background: linear-gradient(135deg, #4540e4 10%, #7779f0 90%);
+            transition: all 0.2s;
+            color: #fff !important;
+            border: none;
+        }
+
+        .copy-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .sidebar-link {
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-link:hover {
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+
+        #sidebar {
+            transition: transform 0.2s;
+        }
+
+        @media (min-width: 768px) {
+            #sidebar {
+                transform: translateX(0) !important;
+            }
+
+            #sidebarToggle {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="flex items-start min-h-screen p-0 bg-gradient-to-br from-indigo-50 to-blue-100">
+    <aside id="sidebar"
+        class="w-1/5 min-w-[220px] max-w-xs h-screen sticky top-0 bg-white border-r border-indigo-100 shadow-lg flex flex-col py-8 px-6 z-10 transition-transform duration-200 ease-in-out flex-shrink-0 closed">
+        <div class="flex flex-col items-center mb-10">
+            <img src="/static/logo.png" alt="AI Prompt Generator Logo" class="w-40 h-auto mb-4">
+            <hr class="w-full border-t border-indigo-200 mt-4">
+        </div>
+        <nav class="flex flex-col gap-4">
+            <button
+                class="sidebar-link text-left px-4 py-3 rounded-lg font-semibold text-gray-700 hover:bg-indigo-50 focus:bg-indigo-100 transition"
+                data-section="generator">
+                <i class="fas fa-image mr-2 text-indigo-500"></i> Image Prompt
+            </button>
+            <button
+                class="sidebar-link text-left px-4 py-3 rounded-lg font-semibold text-gray-700 hover:bg-indigo-50 focus:bg-indigo-100 transition"
+                data-section="sample">
+                <i class="fas fa-file-code mr-2 text-indigo-500"></i> Example JSON
+            </button>
+        </nav>
+        <div class="mt-auto text-xs text-gray-400 text-center pt-8">
+            &copy; 2025 Asep Saputra
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 px-0 md:px-8 py-8">
+        <!-- Section: Image Prompt Generator -->
+        <section id="section-generator">
+            <div class="bg-white p-8 rounded-xl shadow-xl w-full border border-gray-200 max-w-4xl mx-auto">
+                <div class="flex justify-between mb-4 gap-4">
+                    <label for="importJsonInput"
+                        class="submit-button cursor-pointer px-4 py-2 rounded-lg shadow-lg flex items-center">
+                        <i class="fas fa-file-import mr-2"></i> Import JSON
+                    </label>
+                    <input type="file" id="importJsonInput" accept="application/json" class="hidden">
+                    <button type="button" id="clearFormBtn"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-lg shadow flex items-center transition duration-200">
+                        <i class="fas fa-eraser mr-2"></i>Clear All
+                    </button>
+                </div>
+
+                <form id="promptForm" class="space-y-6">
+                    <!-- Background -->
+                    <div class="form-section bg-white p-6 rounded-lg border border-indigo-100 shadow-sm mb-6">
+                        <h2 class="section-header text-2xl mb-4">Background</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="background.type"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                                <input type="text" id="background.type" name="background.type"
+                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    value="Modern bedroom, on a large and long bed">
+                            </div>
+                            <div>
+                                <label for="background.elements"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Surrounding
+                                    Objects</label>
+                                <input type="text" id="background.elements" name="background.elements"
+                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    value="Soft pillows, thick blankets, bedside lamp, small table, minimalist decor">
+                            </div>
+                            <div>
+                                <label for="background.lighting"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Lighting</label>
+                                <input type="text" id="background.lighting" name="background.lighting"
+                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    value="Warm and soft light, natural morning or night lighting">
+                            </div>
+                            <div>
+                                <label for="atmosphere"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Atmosphere</label>
+                                <input type="text" id="atmosphere" name="atmosphere"
+                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    value="Warm, intimate, elegant, alluring, professional, suitable for fashion promotion">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Physical Attributes -->
+                    <div class="form-section bg-white p-6 rounded-lg border border-indigo-100 shadow-sm mb-6">
+                        <h2 class="section-header text-2xl mb-4">Physical Attributes</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="physical_attributes.gender"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                                <input type="text" id="physical_attributes.gender" name="physical_attributes.gender"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Male and female">
+                            </div>
+                            <div>
+                                <label for="physical_attributes.ethnicity"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Ethnicity/Nationality</label>
+                                <input type="text" id="physical_attributes.ethnicity"
+                                    name="physical_attributes.ethnicity"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Indonesian, Asian">
+                            </div>
+                            <div>
+                                <label for="physical_attributes.age_range"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                                <input type="text" id="physical_attributes.age_range"
+                                    name="physical_attributes.age_range"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Young adults (27-35 years old)">
+                            </div>
+                            <div>
+                                <label for="physical_attributes.body_type"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Body Type</label>
+                                <input type="text" id="physical_attributes.body_type"
+                                    name="physical_attributes.body_type"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="A fit, athletic man and a well-proportioned female model, both exuding confidence and attractiveness.">
+                            </div>
+                            <div>
+                                <label for="physical_attributes.height"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Height</label>
+                                <input type="text" id="physical_attributes.height" name="physical_attributes.height"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Male approximately 175 cm, female approximately 165 cm">
+                            </div>
+                            <div>
+                                <label for="physical_attributes.weight"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Weight</label>
+                                <input type="text" id="physical_attributes.weight" name="physical_attributes.weight"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Proportional and healthy">
+                            </div>
+                            <div class="col-span-1 md:col-span-2">
+                                <label for="physical_attributes.skin_tone"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Skin Tone</label>
+                                <input type="text" id="physical_attributes.skin_tone"
+                                    name="physical_attributes.skin_tone"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Light brown, olive, natural">
+                            </div>
+                            <div>
+                                <label for="physical_attributes.bust_shape"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Bust Shape</label>
+                                <input type="text" id="physical_attributes.bust_shape"
+                                    name="physical_attributes.bust_shape"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Female: round and proportional, Male: broad">
+                            </div>
+                            <div>
+                                <label for="physical_attributes.bust_size"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Bust Size</label>
+                                <input type="text" id="physical_attributes.bust_size"
+                                    name="physical_attributes.bust_size"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Female: 36C, Male: proportional">
+                            </div>
+                            <div class="col-span-1 md:col-span-2">
+                                <label for="physical_attributes.accessories"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Accessories Worn</label>
+                                <input type="text" id="physical_attributes.accessories"
+                                    name="physical_attributes.accessories"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Both wearing luxury watches, and the woman wearing elegant small diamond earrings">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clothing -->
+                    <div class="form-section bg-white p-6 rounded-lg border border-indigo-100 shadow-sm mb-6">
+                        <h2 class="section-header text-2xl mb-4">Clothing</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="clothing.headwear"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Headwear/Hair
+                                    Accessories</label>
+                                <input type="text" id="clothing.headwear" name="clothing.headwear"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="No headwear">
+                            </div>
+                            <div>
+                                <label for="clothing.top" class="block text-sm font-medium text-gray-700 mb-1">Top
+                                    Wear</label>
+                                <input type="text" id="clothing.top" name="clothing.top"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Hot sleepwear, satin or silk, attractive colors, trendy style">
+                            </div>
+                            <div>
+                                <label for="clothing.bottoms"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Bottom
+                                    Wear</label>
+                                <input type="text" id="clothing.bottoms" name="clothing.bottoms"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Satin shorts or mini skirt, male matching sleep pants">
+                            </div>
+                            <div>
+                                <label for="clothing.footwear"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Footwear</label>
+                                <input type="text" id="clothing.footwear" name="clothing.footwear"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Barefoot, bare feet on the bed">
+                            </div>
+                            <div class="col-span-1 md:col-span-2">
+                                <label for="clothing.bra_color" class="block text-sm font-medium text-gray-700 mb-1">Bra
+                                    Color</label>
+                                <input type="text" id="clothing.bra_color" name="clothing.bra_color"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Coordinated with sleepwear, matching or contrasting colors">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Facial Expression -->
+                    <div class="form-section bg-white p-6 rounded-lg border border-indigo-100 shadow-sm mb-6">
+                        <h2 class="section-header text-2xl mb-4">Facial Expression</h2>
+                        <label for="expression" class="block text-sm font-medium text-gray-700 mb-1">Expression</label>
+                        <textarea id="expression" name="expression"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            rows="3">Confidently smiling, seductive gaze, relaxed and professional expression, looking at each other or at the camera</textarea>
+                    </div>
+
+                    <!-- Activity & Interaction -->
+                    <div class="form-section bg-white p-6 rounded-lg border border-indigo-100 shadow-sm mb-6">
+                        <h2 class="section-header text-2xl mb-4">Activity & Interaction</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="action_and_interaction.actions"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Activities (separate with
+                                    commas)</label>
+                                <textarea id="action_and_interaction.actions" name="action_and_interaction.actions"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    rows="5">Posing on the bed, sitting or lying relaxed, showcasing their beautiful bodies, light interaction with each other</textarea>
+                            </div>
+                            <div>
+                                <label for="action_and_interaction.interactions"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Interaction</label>
+                                <textarea id="action_and_interaction.interactions"
+                                    name="action_and_interaction.interactions"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    rows="5">Smiling at each other, looking at each other, posing together, showing intimacy and chemistry</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Quality -->
+                    <div class="form-section bg-white p-6 rounded-lg border border-indigo-100 shadow-sm mb-6">
+                        <h2 class="section-header text-2xl mb-4">Image Quality</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="image_quality.resolution"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Image Resolution</label>
+                                <input type="text" id="image_quality.resolution" name="image_quality.resolution"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Very high resolution (8K)">
+                            </div>
+                            <div>
+                                <label for="image_quality.focus"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Image Focus</label>
+                                <input type="text" id="image_quality.focus" name="image_quality.focus"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Sharp focus on models and sleepwear">
+                            </div>
+                            <div>
+                                <label for="image_quality.clarity"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Image Clarity</label>
+                                <input type="text" id="image_quality.clarity" name="image_quality.clarity"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Clean, clear details">
+                            </div>
+                            <div>
+                                <label for="image_quality.vibrancy"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Brightness & Color</label>
+                                <input type="text" id="image_quality.vibrancy" name="image_quality.vibrancy"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Natural colors, slightly warm, highlighting sleepwear colors">
+                            </div>
+                            <div>
+                                <label for="image_quality.style"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Photo
+                                    Style</label>
+                                <input type="text" id="image_quality.style" name="image_quality.style"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Fashion editorial, promotional, slightly candid">
+                            </div>
+                            <div>
+                                <label for="image_quality.detail_level"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Image Detail Level</label>
+                                <input type="text" id="image_quality.detail_level" name="image_quality.detail_level"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Details on fabric texture, facial expressions, and body poses">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Photo Composition -->
+                    <div class="form-section bg-white p-6 rounded-lg border border-indigo-100 shadow-sm mb-6">
+                        <h2 class="section-header text-2xl mb-4">Photo Composition</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="composition.shot_type"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Shot
+                                    Type</label>
+                                <input type="text" id="composition.shot_type" name="composition.shot_type"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Full body shot">
+                            </div>
+                            <div>
+                                <label for="composition.focus_subject"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Main Photo Focus</label>
+                                <input type="text" id="composition.focus_subject" name="composition.focus_subject"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Male and female models and the promoted sleepwear">
+                            </div>
+                            <div>
+                                <label for="composition.aspect_ratio"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Aspect
+                                    Ratio</label>
+                                <input type="text" id="composition.aspect_ratio" name="composition.aspect_ratio"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="16:9 (portrait)">
+                            </div>
+                            <div>
+                                <label for="composition.camera_angle"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Camera
+                                    Angle</label>
+                                <input type="text" id="composition.camera_angle" name="composition.camera_angle"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    value="Eye-level, slightly from the side, highlighting poses and expressions">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Purpose -->
+                    <div class="form-section bg-white p-6 rounded-lg border border-indigo-100 shadow-sm mb-6">
+                        <h2 class="section-header text-2xl mb-4">Image Purpose</h2>
+                        <label for="purpose" class="block text-sm font-medium text-gray-700 mb-1">Purpose of Image
+                            Creation</label>
+                        <input type="text" id="purpose" name="purpose"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            value="For fashion magazine cover/spread and sleepwear promotion on Instagram, WhatsApp, and other social media stories">
+                    </div>
+
+                    <!-- Additional Notes -->
+                    <div class="form-section bg-white p-6 rounded-lg border border-indigo-100 shadow-sm mb-6">
+                        <h2 class="section-header text-2xl mb-4">Additional Notes</h2>
+                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                        <textarea id="notes" name="notes"
+                            class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                            rows="3">Ensure lighting highlights fabric texture and model expressions, as this is for premium fashion brand promotion.</textarea>
+                    </div>
+                    <button type="button" id="saveJsonBtn"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-4 px-6 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 flex-1 flex items-center justify-center">
+                        <i class="fas fa-save mr-2"></i>Save
+                    </button>
+                    <button type="submit" id="generateButton"
+                        class="submit-button w-full text-white font-bold py-4 px-6 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-300 mt-8">
+                        <span class="flex items-center justify-center">
+                            <span class="mr-2">Generate Prompt</span>
+                            <span class="text-2xl">✨</span>
+                        </span>
+                    </button>
+                    <div id="loadingIndicator" class="hidden text-center text-blue-500 mt-4">
+                        Processing... Please wait a moment, Boss! ⏳
+                    </div>
+                </form>
+
+                <div id="resultContainer" class="result-container mt-8 p-8 rounded-xl shadow-lg hidden fade-in">
+                    <h2 class="section-header text-2xl mb-4">Generated Prompt:</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-inner mb-4">
+                        <p id="generatedPrompt" class="text-lg text-gray-800 break-words whitespace-pre-wrap"></p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="copyPromptBtn"
+                            class="copy-button text-white font-semibold py-3 px-6 rounded-lg shadow flex items-center">
+                            <i class="fas fa-copy mr-2"></i>
+                            <span>Copy Prompt</span>
+                        </button>
+                        <span id="copySuccessMsg"
+                            class="hidden px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium fade-in">
+                            ✓ Copied!
+                        </span>
+                    </div>
+                </div>
+
+                <div id="errorContainer"
+                    class="mt-8 p-6 bg-red-50 border-2 border-red-200 rounded-xl shadow-lg hidden fade-in">
+                    <h2 class="text-xl font-semibold text-red-800 mb-4">Error Occurred:</h2>
+                    <p id="errorMessage" class="text-lg text-red-900 break-words whitespace-pre-wrap"></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-sample" class="hidden">
+            <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-4xl border border-gray-200 mx-auto">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-4">JSON sample</h2>
+
+                <pre
+                    class="bg-gray-100 p-6 rounded-lg text-sm overflow-x-auto border border-gray-200 w-full max-w-full">
+                                <code id="sampleJsonCode" class="block whitespace-pre text-gray-800"></code>
+                        </pre>
+
+                <div class="flex items-center mt-6">
+                    <button id="copySampleJsonBtn"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded shadow transition duration-200 flex items-center">
+                        <i class="fas fa-copy mr-2"></i>Copy JSON sample
+                    </button>
+                    <span id="copySampleJsonMsg" class="ml-4 text-green-600 font-medium hidden">Copied!</span>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
