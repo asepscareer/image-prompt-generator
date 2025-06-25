@@ -3,6 +3,14 @@
 
 Hosting the image-prompt-generator on Railway involves deploying a Flask application that serves the static HTML files and also handles the backend logic for prompt generation via the Gemini API. Railway provides an efficient and scalable hosting environment, enabling the application to be publicly accessible. The process is straightforward for optimal functionality in the cloud environment.
 
+## 🚀 New to Railway?
+
+Sign up using this referral link to get **$5 in free credits**:
+
+<a href="https://railway.com?referralCode=asepsp" target="_blank">
+  <img src="https://railway.com/brand/logotype-dark.svg" alt="Sign up on Railway" width="180">
+</a>
+
 
 ## About Hosting image-prompt-generator
 The image-prompt-generator is an intuitive tool designed to help users create high-quality image prompts for AI models. This application offers a structured interface that allows users to define various aspects of an image, including background, physical attributes of models, clothing, expressions, as well as image quality and composition. This ensures that the generated prompts are highly detailed and specific, making them ideal for fashion editorials or premium brand promotions.
